@@ -36,8 +36,13 @@ $(function() {
 
 		// フラグメントシェーダ
 		var fs = "";
+		fs += "precision mediump float;";
 		fs += "void main(void) {";
-		fs += "  gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);";
+		fs += "  vec2  pos1   = (gl_FragCoord.xy * 2.0 - vec2(640.0)) / 640.0;";           // [-1, 1]への正規化
+		fs += "  vec2  pos2   = (vec2(1.0) + pos1.xy) / 2.0;";                             // [ 0, 1]への正規化
+		fs += "  float dist   = sqrt((pos1.x * pos1.x) + (pos1.y * pos1.y)) / sqrt(2.0);"; // 中心からの距離（[0, 1]への正規化済）
+		fs += "  float sine   = (sin(dist * 8.0 * 3.14) + 1.0) / 2.0;"
+		fs += "  gl_FragColor = vec4(sine, sine, sine, 1.0);";
 		fs += "}";
 
 		var fragmentShader = HAL.gl.createShader(HAL.gl.FRAGMENT_SHADER);
