@@ -38,11 +38,121 @@ $(function() {
 		var fs = "";
 		fs += "precision mediump float;";
 		fs += "void main(void) {";
-		fs += "  vec2  pos1   = (gl_FragCoord.xy * 2.0 - vec2(640.0)) / 640.0;";           // [-1, 1]への正規化
-		fs += "  vec2  pos2   = (vec2(1.0) + pos1.xy) / 2.0;";                             // [ 0, 1]への正規化
-		fs += "  float dist   = sqrt((pos1.x * pos1.x) + (pos1.y * pos1.y)) / sqrt(2.0);"; // 中心からの距離（[0, 1]への正規化済）
-		fs += "  float sine   = (sin(dist * 8.0 * 3.14) + 1.0) / 2.0;"
-		fs += "  gl_FragColor = vec4(sine, sine, sine, 1.0);";
+		fs += "  bool  flag1[642];";
+		fs += "  bool  flag2[642];";
+		fs += "  bool  isOddStep = true;";
+		fs += "  for (int i = 0; i < 642; i++)";
+		fs += "  {";
+		fs += "    if (i == 321)";
+		fs += "    {";
+		fs += "      flag1[i] = true;";
+		fs += "    }";
+		fs += "    else";
+		fs += "    {";
+		fs += "      flag1[i] = false;";
+		fs += "    }";
+		fs += "  }";
+		fs += "  for (int i = 0; i < 100; i++)";
+		fs += "  {";
+		fs += "    if (isOddStep)";
+		fs += "    {";
+		fs += "      for (int x = 160; x < 480; x++)";
+		fs += "      {";
+		fs += "        if (flag1[x-1] == false && flag1[x] == false && flag1[x+1] == false)";      // [0 0 0] -> 0
+		fs += "        {";
+		fs += "          flag2[x] = false;";
+		fs += "        }";
+		fs += "        else if (flag1[x-1] == false && flag1[x] == false && flag1[x+1] == true)";  // [0 0 1] -> 1
+		fs += "        {";
+		fs += "          flag2[x] = true;";
+		fs += "        }";
+		fs += "        else if (flag1[x-1] == false && flag1[x] == true && flag1[x+1] == false)";  // [0 1 0] -> 0
+		fs += "        {";
+		fs += "          flag2[x] = false;";
+		fs += "        }";
+		fs += "        else if (flag1[x-1] == false && flag1[x] == true && flag1[x+1] == true)";   // [0 1 1] -> 1
+		fs += "        {";
+		fs += "          flag2[x] = true;";
+		fs += "        }";
+		fs += "        else if (flag1[x-1] == true && flag1[x] == false && flag1[x+1] == false)";  // [1 0 0] -> 1
+		fs += "        {";
+		fs += "          flag2[x] = true;";
+		fs += "        }";
+		fs += "        else if (flag1[x-1] == true && flag1[x] == false && flag1[x+1] == true)";   // [1 0 1] -> 0
+		fs += "        {";
+		fs += "          flag2[x] = false;";
+		fs += "        }";
+		fs += "        else if (flag1[x-1] == true && flag1[x] == true && flag1[x+1] == false)";   // [1 1 0] -> 1
+		fs += "        {";
+		fs += "          flag2[x] = true;";
+		fs += "        }";
+		fs += "        else if (flag1[x-1] == true && flag1[x] == true && flag1[x+1] == true)";    // [1 1 1] -> 0
+		fs += "        {";
+		fs += "          flag2[x] = false;";
+		fs += "        }";
+		fs += "      }";
+		fs += "    }";
+		fs += "    else";
+		fs += "    {";
+		fs += "      for (int x = 160; x < 480; x++)";
+		fs += "      {";
+		fs += "        if (flag2[x-1] == false && flag2[x] == false && flag2[x+1] == false)";      // [0 0 0] -> 0
+		fs += "        {";
+		fs += "          flag1[x] = false;";
+		fs += "        }";
+		fs += "        else if (flag2[x-1] == false && flag2[x] == false && flag2[x+1] == true)";  // [0 0 1] -> 1
+		fs += "        {";
+		fs += "          flag1[x] = true;";
+		fs += "        }";
+		fs += "        else if (flag2[x-1] == false && flag2[x] == true && flag2[x+1] == false)";  // [0 1 0] -> 0
+		fs += "        {";
+		fs += "          flag1[x] = false;";
+		fs += "        }";
+		fs += "        else if (flag2[x-1] == false && flag2[x] == true && flag2[x+1] == true)";   // [0 1 1] -> 1
+		fs += "        {";
+		fs += "          flag1[x] = true;";
+		fs += "        }";
+		fs += "        else if (flag2[x-1] == true && flag2[x] == false && flag2[x+1] == false)";  // [1 0 0] -> 1
+		fs += "        {";
+		fs += "          flag1[x] = true;";
+		fs += "        }";
+		fs += "        else if (flag2[x-1] == true && flag2[x] == false && flag2[x+1] == true)";   // [1 0 1] -> 0
+		fs += "        {";
+		fs += "          flag1[x] = false;";
+		fs += "        }";
+		fs += "        else if (flag2[x-1] == true && flag2[x] == true && flag2[x+1] == false)";   // [1 1 0] -> 1
+		fs += "        {";
+		fs += "          flag1[x] = true;";
+		fs += "        }";
+		fs += "        else if (flag2[x-1] == true && flag2[x] == true && flag2[x+1] == true)";    // [1 1 1] -> 0
+		fs += "        {";
+		fs += "          flag1[x] = false;";
+		fs += "        }";
+		fs += "      }";
+		fs += "    }";
+		fs += "    if (i > int(gl_FragCoord.y))";
+		fs += "    {";
+		fs += "      break;";
+		fs += "    }";
+		fs += "    ";
+		fs += "    isOddStep = !(isOddStep);";
+		fs += "    ";
+		fs += "  }";
+		fs += "  for (int i = 0; i < 640; i++)";
+		fs += "  {";
+		fs += "    if (i == int(gl_FragCoord.x))";
+		fs += "    {";
+		fs += "      if (isOddStep ? flag2[i] : flag1[i])";
+		fs += "      {";
+		fs += "        gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);";
+		fs += "      }";
+		fs += "      else";
+		fs += "      {";
+		fs += "        gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);";
+		fs += "      }";
+		fs += "      break;";
+		fs += "    }";
+		fs += "  }";
 		fs += "}";
 
 		var fragmentShader = HAL.gl.createShader(HAL.gl.FRAGMENT_SHADER);
@@ -62,9 +172,10 @@ $(function() {
 	(function() {
 		// 頂点配列
 		HAL.vertexArray = [
-			-0.90, -0.78, 0.00,
-			 0.90, -0.78, 0.00,
-			 0.00,  0.78, 0.00
+			-1.00,  1.00, 0.00,
+			-1.00, -1.00, 0.00,
+			 1.00,  1.00, 0.00,
+			 1.00, -1.00, 0.00
 		];
 
 		// WebGLの配列にデータ転送
@@ -82,7 +193,7 @@ $(function() {
 	// 描画
 	(function() {
 		HAL.gl.clear(HAL.gl.COLOR_BUFFER_BIT);
-		HAL.gl.drawArrays(HAL.gl.TRIANGLES, 0, 3);
+		HAL.gl.drawArrays(HAL.gl.TRIANGLE_STRIP, 0, 4);
 	}());
 });
 
